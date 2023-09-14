@@ -169,7 +169,7 @@ def get_readable_message():
         globals()['STATUS_START'] = STATUS_LIMIT * (PAGES - 1)
         globals()['PAGE_NO'] = PAGES
     for download in list(download_dict.values())[STATUS_START:STATUS_LIMIT+STATUS_START]:
-        msg += f"<spoiler>{escape(f'{download.name()}')}</spoiler>\n"
+        msg += f"{escape(f'{download.name()}')}\n"
         msg += f"<b>{download.status()}...</b>"
         if download.status() not in [MirrorStatus.STATUS_SPLITTING, MirrorStatus.STATUS_SEEDING]:
             msg += f"\n{progress_bar(download.progress())} {download.progress()}"
@@ -212,7 +212,7 @@ def get_readable_message():
         buttons.ibutton("Next", "status nex")
         button = buttons.build_menu(3)
     msg += "____________________________"    
-    msg += f"<b>Task</b>: {tasks}{bmax_task}"
+    msg += f"\n<b>Task</b>: {tasks}{bmax_task}"
     msg += f"\n<b>Uptime:</b> {currentTime}"
     msg += f"\n<b>Free</b>: {get_readable_file_size(disk_usage('/usr/src/app/downloads/').free)}"
     msg += f"\n<b>UL</b>: {get_readable_file_size(up_speed)}/s"
