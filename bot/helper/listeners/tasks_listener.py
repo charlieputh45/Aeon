@@ -377,8 +377,7 @@ class MirrorLeechListener:
             msg += f'<b>• Total files: </b>{folders}\n'
             if mime_type != 0:
                 msg += f'<b>• Corrupted files: </b>{mime_type}\n'
-            msg += f'<b>• Leeched by: </b>{self.tag}\n'
-            msg += f'<b>• User ID: </b><code>{self.message.from_user.id}</code>\n\n'
+            msg += f'<b>• Leeched by: </b>{self.message.from_user.mention()}\n'
             if not files:
                 if self.isPrivate:
                     msg += '<b>Files have not been sent for an unspecified reason</b>'
@@ -406,9 +405,9 @@ class MirrorLeechListener:
                 await sendMessage(self.botpmmsg, msg + lmsg + fmsg)
                 await deleteMessage(self.botpmmsg)
                 if self.isSuperGroup:
-                    btn.ibutton('View in inbox', f"aeon {user_id} botpm", 'header')
+                    btn.ibutton('View in DM', f"aeon {user_id} botpm", 'header')
                     btn = extra_btns(btn)
-                    await sendMessage(self.message, f'{msg} <b>Files has been sent to your inbox</b>', btn.build_menu(1))
+                    await sendMessage(self.message, f'{msg} <b>Files has been sent to your DM</b>', btn.build_menu(1))
                 else:
                     await deleteMessage(self.botpmmsg)
             if self.seed:
@@ -449,9 +448,7 @@ class MirrorLeechListener:
             else:
                 msg += f'<b>• Path: </b><code>{rclonePath}</code>\n'
                 button = None
-            msg += f'<b>• Uploaded by: </b>{self.tag}\n'
-            msg += f'<b>• User ID: </b><code>{self.message.from_user.id}</code>\n\n'
-
+            msg += f'<b>• Uploaded by: </b>{self.message.from_user.mention()}\n'
             if config_dict['MIRROR_LOG_ID']:
                 buttonss = button
                 log_msg = list((await sendMultiMessage(config_dict['MIRROR_LOG_ID'], msg, buttonss)).values())[0]
@@ -461,9 +458,9 @@ class MirrorLeechListener:
             await sendMessage(self.botpmmsg, msg, button, self.random_pic)
             await deleteMessage(self.botpmmsg)
             if self.isSuperGroup:
-                buttons.ibutton('View in inbox', f"aeon {user_id} botpm", 'header')
+                buttons.ibutton('View in DM', f"aeon {user_id} botpm", 'header')
                 buttons = extra_btns(buttons)
-                await sendMessage(self.message, f'{msg} <b>Links has been sent to your inbox</b>', buttons.build_menu(1))
+                await sendMessage(self.message, f'{msg} <b>Links has been sent to your DM</b>', buttons.build_menu(1))
             else:
                 await deleteMessage(self.botpmmsg)
             if self.seed:
