@@ -41,6 +41,9 @@ async def stats(_, message):
     currentTime = get_readable_time(time() - botStartTime)
     osUptime = get_readable_time(time() - boot_time())
     cpuUsage = cpu_percent(interval=0.5)
+    sent        = get_readable_file_size(net_io_counters().bytes_sent)
+    recv        = get_readable_file_size(net_io_counters().bytes_recv)
+    tb          = get_readable_file_size(net_io_counters().bytes_sent + net_io_counters().bytes_recv)
     quote = Quote.print().split('―', 1)[0].strip().replace("“", "").replace("”", "")
     limit_mapping = {
         'Torrent':    config_dict.get('TORRENT_LIMIT', '∞'),
@@ -52,14 +55,17 @@ async def stats(_, message):
         'Mega':       config_dict.get('MEGA_LIMIT', '∞'),
         'User tasks': config_dict.get('USER_MAX_TASKS', '∞'),
     }
-    system_info = f'<b>{quote}</b>\n\n'\
-        f'<code>• Bot uptime :</code> {currentTime}\n'\
-        f'<code>• Sys uptime :</code> {osUptime}\n'\
-        f'<code>• CPU usage  :</code> {cpuUsage}%\n'\
-        f'<code>• RAM usage  :</code> {memory.percent}%\n'\
-        f'<code>• Disk usage :</code> {disk}%\n'\
-        f'<code>• Free space :</code> {get_readable_file_size(free)}\n'\
-        f'<code>• Total space:</code> {get_readable_file_size(total)}\n\n'
+    system_info = f'<spoiler>{quote}</spoiler>\n\n'\
+        f'<b>• Bot uptime :</b> {currentTime}\n'\
+        f'<b>• Sys uptime :</b> {osUptime}\n'\
+        f'<b>• CPU usage  :</b> {cpuUsage}%\n'\
+        f'<b>• RAM usage  :</b> {memory.percent}%\n'\
+        f'<b>• Disk usage :</b> {disk}%\n'\
+        f'<b>• Free space :</b> {get_readable_file_size(free)}\n'\
+        f'<b>• Total space:</b> {get_readable_file_size(total)}\n'\
+        f'<b>• Total Bandwidth:</b> {tb}\n'\
+        f'<b>• Up:</b> {sent} | <b>Down:</b> {recv}\n\n'
+    
             
     limitations = f'<b>LIMITATIONS</b>\n\n'
     
@@ -70,7 +76,7 @@ async def stats(_, message):
             v = f'{v}GB/Link'
         else:
             v = f'{v} Tasks/user'
-        limitations += f'<code>• {k:<11}:</code> {v}\n'
+        limitations += f'<b>• {k:<11}:</b> {v}\n'
 
     stats = system_info + limitations
     reply_message = await sendMessage(message, stats, photo='IMAGES')
@@ -273,7 +279,7 @@ async def bot_help(client, message):
 
 
 async def restart_notification():
-    now = datetime.now(timezone('Asia/Dhaka'))
+    now = datetime.now(timezone('Asia/Kolkata'))
     date = now.strftime('%d/%m/%y')
     time = now.strftime('%I:%M:%S %p')
     rmsg = f'Restarted Successfully!\n\n<b>Date:</b> {date}\n<b>Time:</b> {time}'
