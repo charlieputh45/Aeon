@@ -80,6 +80,8 @@ async def stats(_, message):
 @new_thread
 async def start(client, message):
     buttons = ButtonMaker()
+    buttons.ubutton(
+        "Update channel", "https://t.me/+gTwhsy49NOlmMDBl")
     reply_markup = buttons.build_menu(2)
     if len(message.command) > 1 and message.command[1] == "aeon":
         await deleteMessage(message)
@@ -113,9 +115,9 @@ async def start(client, message):
     elif await CustomFilters.authorized(client, message):
         help_command = f"/{BotCommands.HelpCommand}"
         start_string = f'This bot can mirror all your links|files|torrents to Google Drive or any rclone cloud or to telegram.\n<b>Type {help_command} to get a list of available commands</b>'
-        await sendMessage(message, start_string, photo='IMAGES')
+        await sendMessage(message, start_string, reply_markup, photo='IMAGES')
     else:
-        await sendMessage(message, 'You Are not authorized user!', photo='IMAGES')
+        await sendMessage(message, 'You Are not authorized user!', reply_markup, photo='IMAGES')
     await DbManager().update_pm_users(message.from_user.id)
 
 
