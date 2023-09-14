@@ -367,8 +367,8 @@ class MirrorLeechListener:
         user_id = self.message.from_user.id
         name, _ = await format_filename(name, user_id, isMirror=not self.isLeech)
         user_dict = user_data.get(user_id, {})
-        msg = f'<spoiler>{escape(name)}</spoiler>\n\n'
-        msg += f'<b>• Size: </b>{get_readable_file_size(size)}\n'
+        nmsg = f'Name: {escape(name)}\n\n'
+        msg = f'<b>• Size: </b>{get_readable_file_size(size)}\n'
         msg += f'<b>• Elapsed: </b>{get_readable_time(time() - self.message.date.timestamp())}\n'
         msg += f'<b>• Mode: </b>{self.upload_details["mode"]}\n'
         LOGGER.info(f'Task Done: {name}')
@@ -399,10 +399,10 @@ class MirrorLeechListener:
                         fmsg = '\n\n'
                 if fmsg != '\n\n':
                     if self.linkslogmsg:
-                        await sendMessage(self.linkslogmsg, msg + lmsg + fmsg)
+                        await sendMessage(self.linkslogmsg, nmsg + msg + lmsg + fmsg)
                         await deleteMessage(self.linkslogmsg)
                 btn = ButtonMaker()
-                await sendMessage(self.botpmmsg, msg + lmsg + fmsg)
+                await sendMessage(self.botpmmsg, nmsg + msg + lmsg + fmsg)
                 await deleteMessage(self.botpmmsg)
                 if self.isSuperGroup:
                     btn.ibutton('View in DM', f"aeon {user_id} botpm", 'header')
@@ -451,11 +451,11 @@ class MirrorLeechListener:
             msg += f'<b>• Uploaded by: </b>{self.message.from_user.mention()}\n\n'
             if config_dict['MIRROR_LOG_ID']:
                 buttonss = button
-                log_msg = list((await sendMultiMessage(config_dict['MIRROR_LOG_ID'], msg, buttonss)).values())[0]
+                log_msg = list((await sendMultiMessage(config_dict['MIRROR_LOG_ID'], nmsg + msg, buttonss)).values())[0]
                 if self.linkslogmsg:
                     await deleteMessage(self.linkslogmsg)
             buttons = ButtonMaker()
-            await sendMessage(self.botpmmsg, msg, button, self.random_pic)
+            await sendMessage(self.botpmmsg, nmsg + msg, button, self.random_pic)
             await deleteMessage(self.botpmmsg)
             if self.isSuperGroup:
                 buttons.ibutton('View in DM', f"aeon {user_id} botpm", 'header')
