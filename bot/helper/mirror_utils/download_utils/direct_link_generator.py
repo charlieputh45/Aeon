@@ -490,22 +490,27 @@ def terabox(url):
     return details
 
 def filepress(url):
-    with create_scraper() as session:
-        try:
-            url = session.get(url).url
-            raw = urlparse(url)
-            json_data = {
-                'id': raw.path.split('/')[-1],
-                'method': 'publicDownlaod',
-            }
-            api = f'{raw.scheme}://{raw.hostname}/api/file/downlaod/'
-            res = session.post(api, headers={'Referer': f'{raw.scheme}://{raw.hostname}'}, json=json_data).json()
-        except Exception as e:
-            raise DirectDownloadLinkException(f'ERROR: {e.__class__.__name__}') from e
-    if 'data' not in res:
-        raise DirectDownloadLinkException(f'ERROR: {res["statusText"]}')
-    return f'https://drive.google.com/uc?id={res["data"]}&export=download'
-
+    try:
+        cget = requests.get(url, allow_redirects=False)
+        if 'location' in cget.headers:
+            url = cget.headers['location']
+        raw = urlparse(url)
+        json_data = {
+            'id': raw.path.split('/')[-1],
+            'method': 'publicDownlaod',}
+        headers = {'Referer': f'{raw.scheme}://{raw.hostname}'}
+        resp = requests.post(f'{raw.scheme}://{raw.hostname}/api/file/downlaod/', headers=headers, json=json_data)
+        d_id = resp.json()
+        if d_id.get('data', False):
+            dl_link = f"https://drive.google.com/uc?id={d_id['data']}&export=download"
+            dl_resp = requests.get(dl_link)
+            parsed = BeautifulSoup(dl_resp.content, 'html.parser').find('span')
+            combined = str(parsed).rsplit('(', maxsplit=1)
+            name, size = combined[0], combined[1].replace(')', '') + 'B'
+        del json_data['method']
+        return dl_link
+    except Exception as e:
+        raise DirectDownloadLinkException(f'ERROR: {e.__class__.__name__}')
 
 def gdtot(url):
     cget = create_scraper().request
