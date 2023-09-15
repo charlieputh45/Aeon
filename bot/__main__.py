@@ -121,7 +121,8 @@ async def start(client, message):
     elif await CustomFilters.authorized(client, message):
         help_command = f"/{BotCommands.HelpCommand}"
         start_string = f'This bot can mirror all your links|files|torrents to Google Drive or any rclone cloud or to telegram.\n<b>Type {help_command} to get a list of available commands</b>'
-        await sendMessage(message, start_string, reply_markup, photo='IMAGES')
+        gmsg = await sendMessage(message, start_string, reply_markup, photo='IMAGES')
+        await one_minute_del(gmsg)
     else:
         await sendMessage(message, 'You Are not authorized user!', reply_markup, photo='IMAGES')
     await DbManager().update_pm_users(message.from_user.id)
