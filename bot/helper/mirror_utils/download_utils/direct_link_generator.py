@@ -501,7 +501,7 @@ def filepress(url):
             api = f'{raw.scheme}://{raw.hostname}/api/file/downlaod/'
             res = session.post(api, headers={'Referer': f'{raw.scheme}://{raw.hostname}'}, json=json_data).json()
         except Exception as e:
-            raise DirectDownloadLinkException(f'ERROR: {e.__class__.__name__}')
+            raise DirectDownloadLinkException(f'ERROR: {e.__class__.__name__}') from e
     if 'data' not in res:
         raise DirectDownloadLinkException(f'ERROR: {res["statusText"]}')
     return f'https://drive.google.com/uc?id={res["data"]}&export=download'
