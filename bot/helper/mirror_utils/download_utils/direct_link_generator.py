@@ -508,9 +508,9 @@ def filepress(url):
             combined = str(parsed).rsplit('(', maxsplit=1)
             name, size = combined[0], combined[1].replace(')', '') + 'B'
         del json_data['method']
-        return dl_link
     except Exception as e:
         raise DirectDownloadLinkException(f'ERROR: {e.__class__.__name__}')
+    return dl_link
 
 def gdtot(url):
     cget = create_scraper().request
