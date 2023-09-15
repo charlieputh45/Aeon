@@ -490,6 +490,7 @@ def terabox(url):
     return details
 
 def filepress(url):
+    dl_link = None
     try:
         cget = requests.get(url, allow_redirects=False)
         if 'location' in cget.headers:
