@@ -152,6 +152,8 @@ def mediafire(url, session=None):
         return final_link[0]
     if session is None:
         session = Session()
+        parsed_url = urlparse(url)
+        url = f'{parsed_url.scheme}://{parsed_url.netloc}{parsed_url.path}'
     try:
         html = HTML(session.get(url).text)
     except Exception as e:
@@ -1013,7 +1015,7 @@ def doods(url):
             raise DirectDownloadLinkException('ERROR: Token Link not found')
         link = f'{parsed_url.scheme}://{parsed_url.hostname}/{link[0]}'
         try:
-            _res = session.get(link)
+            _res = session.get(_res.url)
         except Exception as e:
             raise DirectDownloadLinkException(
                 f'ERROR: {e.__class__.__name__} While fetching download link')
@@ -1095,6 +1097,8 @@ def filelions(url):
         spited_file_code = file_code.rsplit('_', 1)
         quality = spited_file_code[1]
         file_code = spited_file_code[0]
+    parsed_url = urlparse(url)
+    url = f'{parsed_url.scheme}://{parsed_url.hostname}/{file_code}'
     with Session() as session:
         try:
             _res = session.get('https://api.filelions.com/api/file/direct_link', params={'key': config_dict['FILELION_API'], 'file_code': file_code, 'hls': '1'}).json()
