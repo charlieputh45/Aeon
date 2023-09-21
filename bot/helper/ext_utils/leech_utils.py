@@ -69,7 +69,6 @@ async def get_media_info(path, metadata=False):
         return duration, qual, lang[:-2], stitles[:-2]
     return duration, artist, title
 
-
 async def get_document_type(path):
     is_video, is_audio, is_image = False, False, False
     if path.endswith(tuple(ARCH_EXT)) or re_search(r'.+(\.|_)(rar|7z|zip|bin)(\.0*\d+)?$', path):
