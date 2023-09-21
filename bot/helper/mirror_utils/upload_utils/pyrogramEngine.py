@@ -348,6 +348,7 @@ class TgUploader:
         self.__is_corrupted = False
         try:
             is_video, is_audio, is_image = await get_document_type(self.__up_path)
+
             if self.__leech_utils['thumb']:
                 thumb = await self.get_custom_thumb(self.__leech_utils['thumb'])
             if not is_image and thumb is None:
@@ -420,7 +421,7 @@ class TgUploader:
                                                                     supports_streaming=True,
                                                                     disable_notification=True,
                                                                     progress=self.__upload_progress,
-                                                                     reply_markup=buttons)
+                                                                    reply_markup=buttons)
                 if self.__prm_media and (self.__has_buttons or not self.__leechmsg):
                     try:
                         self.__sent_msg = await bot.copy_message(nrml_media.chat.id, nrml_media.chat.id, nrml_media.id, reply_to_message_id=self.__sent_msg.id, reply_markup=buttons)
