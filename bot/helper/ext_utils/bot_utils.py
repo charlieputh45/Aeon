@@ -176,7 +176,6 @@ def get_readable_message():
             msg += f"\n{download.processed_bytes()} of {download.size()}"
             msg += f"\n<b>Speed:</b> {download.speed()}"
             msg += f'\n<b>Estimated:</b> {download.eta()}'
-            msg += f"\n<b>User: </b>{download.message.from_user.mention()}"
             if hasattr(download, 'seeders_num'):
                 try:
                     msg += f"\nSeeders: {download.seeders_num()} | Leechers: {download.leechers_num()}"
@@ -192,6 +191,7 @@ def get_readable_message():
             msg += f"\n<b>Size:</b> {download.size()}"
         msg += f"\n<b>Elapsed:</b> {get_readable_time(time() - download.message.date.timestamp())}"
         msg += f"\n<b>Mode:</b> {download.upload_details['mode']}"
+        msg += f"\n<b>User:</b> {download.message.from_user.mention()}"
         msg += f"\n/{BotCommands.CancelMirror}_{download.gid()[:8]}\n\n"
     if len(msg) == 0:
         return None, None
