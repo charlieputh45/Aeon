@@ -176,7 +176,7 @@ def get_readable_message():
             msg += f"\n{download.processed_bytes()} of {download.size()}"
             msg += f"\n<b>Speed:</b> {download.speed()}"
             msg += f"\n<b>Estimated:</b> {download.eta()}"
-            msg += f"\n<b>User: </b>{download.message.from_user.mention()}"
+            msg += f"\n<b>Name: </b>{escape(f'{download.message.from_user.mention()}')}"
             if hasattr(download, 'seeders_num'):
                 try:
                     msg += f"\nSeeders: {download.seeders_num()} | Leechers: {download.leechers_num()}"
