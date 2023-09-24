@@ -7,7 +7,6 @@ from os import execl as osexecl
 from asyncio import create_subprocess_exec, gather
 from uuid import uuid4
 from base64 import b64decode
-from quoters import Quote
 from html import escape
 from cloudscraper import create_scraper
 
@@ -44,7 +43,6 @@ async def stats(_, message):
     sent        = get_readable_file_size(net_io_counters().bytes_sent)
     recv        = get_readable_file_size(net_io_counters().bytes_recv)
     tb          = get_readable_file_size(net_io_counters().bytes_sent + net_io_counters().bytes_recv)
-    quote = Quote.print().split('―', 1)[0].strip().replace("“", "").replace("”", "")
     limit_mapping = {
         'Torrent':    config_dict.get('TORRENT_LIMIT', '∞'),
         'Gdrive':     config_dict.get('GDRIVE_LIMIT', '∞'),
@@ -55,8 +53,7 @@ async def stats(_, message):
         'Mega':       config_dict.get('MEGA_LIMIT', '∞'),
         'User tasks': config_dict.get('USER_MAX_TASKS', '∞'),
     }
-    system_info = f'<spoiler>{quote}</spoiler>\n\n'\
-        f'<b>• Bot uptime :</b> {currentTime}\n'\
+    system_info = f'<b>• Bot uptime :</b> {currentTime}\n'\
         f'<b>• Sys uptime :</b> {osUptime}\n'\
         f'<b>• CPU usage  :</b> {cpuUsage}%\n'\
         f'<b>• RAM usage  :</b> {memory.percent}%\n'\
