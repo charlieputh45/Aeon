@@ -409,7 +409,7 @@ class MirrorLeechListener:
                 if self.isSuperGroup:
                     btn.ibutton('View in DM', f"aeon {user_id} botpm", 'header')
                     btn = extra_btns(btn)
-                    await sendMessage(self.message, f'{msg} <b>Files has been sent to your DM</b>', btn.build_menu(1))
+                    await sendMessage(self.message, f'{msg} <b>Files has been sent to your DM</b>', btn.build_menu(1), self.random_pic)
                 else:
                     await deleteMessage(self.botpmmsg)
             if self.seed:
