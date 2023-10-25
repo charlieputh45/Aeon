@@ -169,9 +169,6 @@ class RcloneList:
         if self.list_status == 'rcu' or len(self.path_list) > 0:
             buttons.ibutton('Choose Current Path',
                             'rcq cur', position='footer')
-        if self.list_status == 'rcu':
-            buttons.ibutton('Set as Default Path',
-                            'rcq def', position='footer')
         if self.path or len(self.__sections) > 1 or self.__rc_user and self.__rc_owner:
             buttons.ibutton('Back', 'rcq back pa', position='footer')
         if self.path:
