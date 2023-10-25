@@ -144,10 +144,12 @@ async def restart(client, message):
 
 async def ping(_, message):
     start_time = int(round(time() * 1000))
+    await one_minute_del(message)
     reply = await sendMessage(message, 'Starting ping...')
     end_time = int(round(time() * 1000))
     value=(end_time - start_time)
     await editMessage(reply, f'{value} ms.')
+    await one_minute_del(reply)
 
 
 @new_task
