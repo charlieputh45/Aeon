@@ -72,7 +72,7 @@ async def get_user_settings(from_user, key=None, edit_type=None, edit_mode=None)
 
         text = f'<b>Universal Settings for {name}</b>\n\n'
         text += f'<b>• Daily Task:</b> <b><code> {dailytas} / {dailytl}</code></b>\n'
-        text += f'<b>• Last Used:</b> <b><code> {lastused}</code></b>\n
+        text += f'<b>• Last Used:</b> <b><code> {lastused}</code></b>\n'
         text += f'<b>• YT-DLP Options:</b> <b><code>{ytopt}</code></b>\n'
         text += f'<b>• Prefix:</b> <code>{prefix}</code>\n'
         text += f'<b>• Suffix:</b> <code>{suffix}</code>\n'
