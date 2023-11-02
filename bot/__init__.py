@@ -332,6 +332,17 @@ USER_MAX_TASKS = '' if len(USER_MAX_TASKS) == 0 else int(USER_MAX_TASKS)
 PLAYLIST_LIMIT = environ.get('PLAYLIST_LIMIT', '')
 PLAYLIST_LIMIT = '' if len(PLAYLIST_LIMIT) == 0 else int(PLAYLIST_LIMIT)
 
+DAILY_TASK_LIMIT = environ.get('DAILY_TASK_LIMIT', '')
+DAILY_TASK_LIMIT = '' if len(DAILY_TASK_LIMIT) == 0 else int(DAILY_TASK_LIMIT)
+
+DAILY_MIRROR_LIMIT = environ.get('DAILY_MIRROR_LIMIT', '')
+DAILY_MIRROR_LIMIT = '' if len(
+    DAILY_MIRROR_LIMIT) == 0 else float(DAILY_MIRROR_LIMIT)
+
+DAILY_LEECH_LIMIT = environ.get('DAILY_LEECH_LIMIT', '')
+DAILY_LEECH_LIMIT = '' if len(
+    DAILY_LEECH_LIMIT) == 0 else float(DAILY_LEECH_LIMIT)
+
 FSUB_IDS = environ.get('FSUB_IDS', '')
 if len(FSUB_IDS) == 0:
     FSUB_IDS = ''
@@ -377,6 +388,9 @@ config_dict = {'AS_DOCUMENT': AS_DOCUMENT,
                'CLONE_LIMIT': CLONE_LIMIT,
                'MEGA_LIMIT': MEGA_LIMIT,
                'LEECH_LIMIT': LEECH_LIMIT,
+               'DAILY_TASK_LIMIT': DAILY_TASK_LIMIT,
+               'DAILY_MIRROR_LIMIT': DAILY_MIRROR_LIMIT,
+               'DAILY_LEECH_LIMIT': DAILY_LEECH_LIMIT,               
                'FSUB_IDS': FSUB_IDS,
                'USER_MAX_TASKS': USER_MAX_TASKS,
                'PLAYLIST_LIMIT': PLAYLIST_LIMIT,

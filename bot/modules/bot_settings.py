@@ -306,6 +306,15 @@ async def load_config():
     LEECH_LIMIT = environ.get('LEECH_LIMIT', '')
     LEECH_LIMIT = '' if len(LEECH_LIMIT) == 0 else float(LEECH_LIMIT)
 
+    DAILY_TASK_LIMIT = environ.get('DAILY_TASK_LIMIT', '')
+    DAILY_TASK_LIMIT = '' if len(DAILY_TASK_LIMIT) == 0 else int(DAILY_TASK_LIMIT)
+
+    DAILY_MIRROR_LIMIT = environ.get('DAILY_MIRROR_LIMIT', '')
+    DAILY_MIRROR_LIMIT = '' if len(DAILY_MIRROR_LIMIT) == 0 else float(DAILY_MIRROR_LIMIT)
+
+    DAILY_LEECH_LIMIT = environ.get('DAILY_LEECH_LIMIT', '')
+    DAILY_LEECH_LIMIT = '' if len(DAILY_LEECH_LIMIT) == 0 else float(DAILY_LEECH_LIMIT)
+
     FSUB_IDS = environ.get('FSUB_IDS', '')
     if len(FSUB_IDS) == 0:
         FSUB_IDS = ''
@@ -389,6 +398,9 @@ async def load_config():
                         'CLONE_LIMIT': CLONE_LIMIT,
                         'MEGA_LIMIT': MEGA_LIMIT,
                         'LEECH_LIMIT': LEECH_LIMIT,
+                        'DAILY_TASK_LIMIT': DAILY_TASK_LIMIT,
+                        'DAILY_MIRROR_LIMIT': DAILY_MIRROR_LIMIT,
+                        'DAILY_LEECH_LIMIT': DAILY_LEECH_LIMIT,                        
                         'FSUB_IDS': FSUB_IDS,
                         'FILELION_API': FILELION_API,
                         'USER_MAX_TASKS': USER_MAX_TASKS,

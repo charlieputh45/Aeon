@@ -20,7 +20,7 @@ from bot.helper.telegram_helper.bot_commands import BotCommands
 from bot.helper.telegram_helper.button_build import ButtonMaker
 from bot.helper.ext_utils.db_handler import DbManager
 from bot.helper.ext_utils.text_utils import uset_display_dict
-from bot.helper.ext_utils.bot_utils import update_user_ldata, get_readable_file_size, sync_to_async, new_thread, is_gdrive_link
+from bot.helper.ext_utils.bot_utils import update_user_ldata, get_readable_file_size, getdailytasks, sync_to_async, new_thread, is_gdrive_link
 
 handler_dict = {}
 fname_dict = {'rcc': 'RClone',
@@ -62,8 +62,17 @@ async def get_user_settings(from_user, key=None, edit_type=None, edit_mode=None)
         buttons.ibutton("Remname", f"userset {user_id} remname")
         remname = user_dict.get('remname', 'Not Exists')
 
+        dailytl = config_dict['DAILY_TASK_LIMIT'] or "∞"
+        dailytas = user_dict.get('dly_tasks')[1] if user_dict and user_dict.get('dly_tasks') and user_id != OWNER_ID and config_dict['DAILY_TASK_LIMIT'] else config_dict['DAILY_TASK_LIMIT'] or "️∞" if user_id != OWNER_ID else "∞"
+        if user_dict.get('dly_tasks', False):
+            t = str(datetime.now() - user_dict['dly_tasks'][0]).split(':')
+            lastused = f"{t[0]}h {t[1]}m {t[2].split('.')[0]}s ago"
+        else: lastused = "Bot Not Used yet.."
+
 
         text = f'<b>Universal Settings for {name}</b>\n\n'
+        text += f'<b>• Daily Task:</b> <b><code> {dailytas} / {dailytl}</code></b>\n'
+        text += f'<b>• Last Used:</b> <b><code> {lastused}</code></b>\n
         text += f'<b>• YT-DLP Options:</b> <b><code>{ytopt}</code></b>\n'
         text += f'<b>• Prefix:</b> <code>{prefix}</code>\n'
         text += f'<b>• Suffix:</b> <code>{suffix}</code>\n'
@@ -78,7 +87,12 @@ async def get_user_settings(from_user, key=None, edit_type=None, edit_mode=None)
         user_tds = len(val) if (val := user_dict.get('user_tds', False)) else 0
         buttons.ibutton("User TDs", f"userset {user_id} user_tds")
 
+        dailytlup = get_readable_file_size(config_dict['DAILY_MIRROR_LIMIT'] * 1024**3) if config_dict['DAILY_MIRROR_LIMIT'] else "∞"
+        dailyup = get_readable_file_size(await getdailytasks(user_id, check_mirror=True)) if config_dict['DAILY_MIRROR_LIMIT'] and user_id != OWNER_ID else "️∞"
+
+
         text = f'<b>Mirror Settings for {name}</b>\n\n'
+        text += f'<b>• Daily Limit:</b> {dailyup} / {dailytlup}\n'
         text += f'<b>• Rclone Config:</b> {rccmsg}\n'
         text += f'<b>• User TD Mode:</b> {tds_mode}'
 
@@ -111,7 +125,12 @@ async def get_user_settings(from_user, key=None, edit_type=None, edit_mode=None)
         buttons.ibutton("Leech Dump", f"userset {user_id} ldump")
         ldump = 'Not Exists' if (val:=user_dict.get('ldump', '')) == '' else val
 
+        dailytlle = get_readable_file_size(config_dict['DAILY_LEECH_LIMIT'] * 1024**3) if config_dict['DAILY_LEECH_LIMIT'] else "️∞"
+        dailyll = get_readable_file_size(await getdailytasks(user_id, check_leech=True)) if config_dict['DAILY_LEECH_LIMIT'] and user_id != OWNER_ID else "∞"
+
+
         text = f'<b>Leech Settings for {name}</b>\n\n'
+        text += f'<b>• Daily Limit:</b> {dailyll} / {dailytlle}\n'
         text += f'<b>• Leech Type:</b> {ltype}\n'
         text += f'<b>• Custom Thumbnail:</b> {thumbmsg}\n'
         text += f'<b>• Leech Split Size:</b> <code>{split_size}</code>\n'

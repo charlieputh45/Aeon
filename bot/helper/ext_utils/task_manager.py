@@ -4,7 +4,7 @@ from asyncio import Event
 from bot import OWNER_ID, config_dict, queued_dl, queued_up, non_queued_up, non_queued_dl, queue_dict_lock, LOGGER, user_data, download_dict
 from bot.helper.mirror_utils.upload_utils.gdriveTools import GoogleDriveHelper
 from bot.helper.ext_utils.fs_utils import get_base_name, check_storage_threshold
-from bot.helper.ext_utils.bot_utils import get_user_tasks, sync_to_async, get_telegraph_list, get_readable_file_size, checking_access
+from bot.helper.ext_utils.bot_utils import get_user_tasks, getdailytasks, sync_to_async, get_telegraph_list, get_readable_file_size, checking_access
 from bot.helper.telegram_helper.message_utils import forcesub, BotPm_check, user_info
 from bot.helper.telegram_helper.message_utils import isAdmin
 
@@ -160,6 +160,25 @@ async def limit_checker(size, listener, isTorrent=False, isMega=False, isDriveLi
             acpt = await sync_to_async(check_storage_threshold, size, limit, arch)
             if not acpt:
                 limit_exceeded = f'You must leave {get_readable_file_size(limit)} free storage.'
+        if config_dict['DAILY_TASK_LIMIT'] and config_dict['DAILY_TASK_LIMIT'] <= await getdailytasks(user_id):
+            limit_exceeded = f"Daily Total Task Limit: {config_dict['DAILY_TASK_LIMIT']}\nYou have exhausted all your Daily Task Limits."
+        else:
+            ttask = await getdailytasks(user_id, increase_task=True)
+            LOGGER.info(f"User: {user_id} | Daily Tasks: {ttask}")
+        if (DAILY_MIRROR_LIMIT := config_dict['DAILY_MIRROR_LIMIT']) and not listener.isLeech:
+            limit = DAILY_MIRROR_LIMIT * 1024**3
+            if (size >= (limit - await getdailytasks(user_id, check_mirror=True)) or limit <= await getdailytasks(user_id, check_mirror=True)):
+                limit_exceeded = f'Daily Mirror Limit is {get_readable_file_size(limit)}\nYou have exhausted all your Daily Mirror Limit.'
+            elif not listener.isLeech:
+                msize = await getdailytasks(user_id, upmirror=size, check_mirror=True)
+                LOGGER.info(f"User : {user_id} | Daily Mirror Size : {get_readable_file_size(msize)}")
+        if (DAILY_LEECH_LIMIT := config_dict['DAILY_LEECH_LIMIT']) and listener.isLeech:
+            limit = DAILY_LEECH_LIMIT * 1024**3
+            if (size >= (limit - await getdailytasks(user_id, check_leech=True)) or limit <= await getdailytasks(user_id, check_leech=True)):
+                limit_exceeded = f'Daily Leech Limit is {get_readable_file_size(limit)}\nYou have exhausted all your Daily Leech Limit.'
+            elif listener.isLeech:
+                lsize = await getdailytasks(user_id, upleech=size, check_leech=True)
+                LOGGER.info(f"User : {user_id} | Daily Leech Size : {get_readable_file_size(lsize)}")
         if (PLAYLIST_LIMIT := config_dict['PLAYLIST_LIMIT']):
             limit_exceeded = f'Playlist limit is {PLAYLIST_LIMIT}'
     if limit_exceeded:

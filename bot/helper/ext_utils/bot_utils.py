@@ -133,6 +133,41 @@ def handleIndex(index, dic):
         elif index > 0: index = index - len(dic)
     return index
 
+async def getdailytasks(user_id, increase_task=False, upleech=0, upmirror=0, check_mirror=False, check_leech=False):
+    task, lsize, msize = 0, 0, 0
+    if user_id in user_data and user_data[user_id].get('dly_tasks'):
+        userdate, task, lsize, msize = user_data[user_id]['dly_tasks']
+        nowdate = datetime.now()
+        if userdate.year <= nowdate.year and userdate.month <= nowdate.month and userdate.day < nowdate.day:
+            task, lsize, msize = 0, 0, 0
+            if increase_task:
+                task = 1
+            elif upleech != 0:
+                lsize += upleech
+            elif upmirror != 0:
+                msize += upmirror
+        elif increase_task:
+            task += 1
+        elif upleech != 0:
+            lsize += upleech
+        elif upmirror != 0:
+            msize += upmirror
+    elif increase_task:
+        task += 1
+    elif upleech != 0:
+        lsize += upleech
+    elif upmirror != 0:
+        msize += upmirror
+    update_user_ldata(user_id, 'dly_tasks', [datetime.now(), task, lsize, msize])
+    if DATABASE_URL:
+        await DbManager().update_user_data(user_id)
+    if check_leech:
+        return lsize
+    elif check_mirror:
+        return msize
+    return task
+
+
 
 async def fetch_user_tds(user_id, force=False):
     user_dict = user_data.get(user_id, {})
