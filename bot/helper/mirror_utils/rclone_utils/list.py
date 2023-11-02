@@ -247,7 +247,6 @@ class RcloneList:
                  'rcd' else '\nTransfer Type: Upload')
             msg += f'\nTimeout: {get_readable_time(self.__timeout-(time()-self.__time))}'
             buttons = ButtonMaker()
-            buttons.ibutton('Owner Config', 'rcq owner')
             buttons.ibutton('My Config', 'rcq user')
             buttons.ibutton('Cancel', 'rcq cancel')
             button = buttons.build_menu(2)
