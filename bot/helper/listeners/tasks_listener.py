@@ -31,6 +31,8 @@ from bot.helper.mirror_utils.rclone_utils.transfer import RcloneTransferHelper
 from bot.helper.telegram_helper.message_utils import sendCustomMsg, sendMessage, editMessage, delete_all_messages, delete_links, sendMultiMessage, update_all_messages, deleteMessage, five_minute_del
 from bot.helper.telegram_helper.button_build import ButtonMaker
 from bot.helper.ext_utils.db_handler import DbManager
+from bot.helper.ext_utils.shortners import short_url
+from bot.helper.ext_utils.aeon_utils import tinyfy
 
 
 class MirrorLeechListener:
@@ -427,7 +429,7 @@ class MirrorLeechListener:
                 msg += f'<b>• Files: </b>{files}\n'
             if link or rclonePath and config_dict['RCLONE_SERVE_URL']:
                 if link:
-                    buttons.ubutton('Cloud link', link)
+                    buttons.ubutton('Cloud link', tinyfy(short_url(link)))
                 else:
                     msg += f'<b>• Path: </b><code>{rclonePath}</code>\n'
                 if rclonePath and (RCLONE_SERVE_URL := config_dict['RCLONE_SERVE_URL']):
