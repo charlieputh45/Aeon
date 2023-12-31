@@ -450,7 +450,6 @@ async def _ytdl(client, message, isLeech=False, sameDir=None, bulk=[]):
             options[key] = value
 
         options['playlist_items'] = '0'
-        options["compat_opts"] = {"prefer-legacy-http-handler": "urllib"}
 
     try:
         result = await sync_to_async(extract_info, link, options)
