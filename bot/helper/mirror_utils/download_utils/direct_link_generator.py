@@ -28,9 +28,7 @@ streamtape_domain = ['streamtape.com', 'streamtape.co', 'streamtape.cc', 'stream
 doods_domain = ['dood.watch', 'doodstream.com', 'dood.to', 'dood.so', 'dood.cx', 'dood.la', 'dood.ws', 'dood.sh', 'doodstream.co', 'dood.pm', 'dood.wf', 'dood.re', 'dood.video', 'dooood.com', 'dood.yt', 'doods.yt', 'dood.stream', 'doods.pro']
 filelions_domain = ['filelions.com', 'filelions.live', 'filelions.to', 'filelions.online']
 _caches = {}
-user_agent = (
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0"
-)
+
 
 def direct_link_generator(link):
     domain = urlparse(link).hostname
@@ -686,34 +684,27 @@ def gofile(url):
         raise DirectDownloadLinkException(f"ERROR: {e.__class__.__name__}")
 
     def __get_token(session):
-        headers = {
-            "User-Agent": user_agent,
-            "Accept-Encoding": "gzip, deflate, br",
-            "Accept": "*/*",
-            "Connection": "keep-alive",
-        }
-        __url = f"https://api.gofile.io/accounts"
+        if 'gofile_token' in _caches:
+            __url = f"https://api.gofile.io/getAccountDetails?token={_caches['gofile_token']}"
+        else:
+            __url = 'https://api.gofile.io/createAccount'
         try:
-            __res = session.post(__url, headers=headers).json()
+            __res = session.get(__url, verify=False).json()
             if __res["status"] != 'ok':
-                raise DirectDownloadLinkException(f"ERROR: Failed to get token.")
-            return __res["data"]["token"]
+                if 'gofile_token' in _caches:
+                    del _caches['gofile_token']
+                return __get_token(session)
+            _caches['gofile_token'] = __res["data"]["token"]
+            return _caches['gofile_token']
         except Exception as e:
             raise e
 
     def __fetch_links(session, _id, folderPath=''):
-        _url = f"https://api.gofile.io/contents/{_id}?wt=4fd6sg89d7s6&cache=true"
-        headers = {
-            "User-Agent": user_agent,
-            "Accept-Encoding": "gzip, deflate, br",
-            "Accept": "*/*",
-            "Connection": "keep-alive",
-            "Authorization": "Bearer" + " " + token,
-        }
+        _url = f"https://api.gofile.io/getContent?contentId={_id}&token={token}&wt=4fd6sg89d7s6&cache=true"
         if _password:
             _url += f"&password={_password}"
         try:
-            _json = session.get(_url, headers=headers).json()
+            _json = session.get(_url, verify=False).json()
         except Exception as e:
             raise DirectDownloadLinkException(f"ERROR: {e.__class__.__name__}")
         if _json['status'] in 'error-passwordRequired':
