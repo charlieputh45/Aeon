@@ -28,7 +28,9 @@ streamtape_domain = ['streamtape.com', 'streamtape.co', 'streamtape.cc', 'stream
 doods_domain = ['dood.watch', 'doodstream.com', 'dood.to', 'dood.so', 'dood.cx', 'dood.la', 'dood.ws', 'dood.sh', 'doodstream.co', 'dood.pm', 'dood.wf', 'dood.re', 'dood.video', 'dooood.com', 'dood.yt', 'doods.yt', 'dood.stream', 'doods.pro']
 filelions_domain = ['filelions.com', 'filelions.live', 'filelions.to', 'filelions.online']
 _caches = {}
-
+user_agent = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0"
+)
 
 def direct_link_generator(link):
     domain = urlparse(link).hostname
