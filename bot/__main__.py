@@ -85,7 +85,7 @@ async def stats(_, message):
 async def start(client, message):
     buttons = ButtonMaker()
     buttons.ubutton(
-        "Update channel", "https://t.me/+gTwhsy49NOlmMDBl")
+        "Update channel", "https://t.me/hrmirrorofficial")
     reply_markup = buttons.build_menu(2)
     if len(message.command) > 1 and message.command[1] == "aeon":
         await deleteMessage(message)
