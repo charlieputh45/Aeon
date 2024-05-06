@@ -1,3 +1,5 @@
+import requests
+
 from hashlib import sha256
 from http.cookiejar import MozillaCookieJar
 from json import loads
@@ -20,6 +22,9 @@ from bot.helper.ext_utils.exceptions import DirectDownloadLinkException
 from bot.helper.ext_utils.help_messages import PASSWORD_ERROR_MESSAGE
 
 _caches = {}
+user_agent = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0"
+)
 domain_dict = {
     'mediafire':    ['mediafire.com'],
     'osdn':         ['osdn.net'],
@@ -61,7 +66,8 @@ domain_dict = {
                      'dood.yt',
                      'doods.yt',
                      'dood.stream',
-                     'doods.pro'],
+                     'doods.pro',
+                     'ds2play.com'],
     'streamtape':   ['streamtape.com',
                      'streamtape.co',
                      'streamtape.cc',
@@ -77,18 +83,26 @@ domain_dict = {
                      'mirrobox',
                      'momerybox',
                      'teraboxapp',
-                     '1024tera'],
-    'filewish':     ['filelions.com',
+                     '1024tera',
+                     'terabox.app'],
+    'filewish':     ['filelions.co',
+                     'filelions.site',
                      'filelions.live',
+                     'filelions.lol',
                      'filelions.to',
+                     'cabecabean.lol',
                      'filelions.online',
                      'embedwish.com',
                      'streamwish.com',
                      'kitabmarkaz.xyz',
-                     'wishfast.top'],
+                     'wishfast.top',
+                     'streamwish.to'],
     'linkBox':      ['linkbox.to',
-                     'lbx.to'],
-    'filepress':    ['filepress']
+                     'lbx.to',
+                     'telbx.net',
+                     'teltobx.net'],
+    'filepress':    ['filepress'],
+    'pcloud':       ['u.pcloud.link']
 }
 
 def direct_link_generator(link):
@@ -663,7 +677,6 @@ def linkBox(url:str):
         raise e
     return details
 
-
 def gofile(url):
     try:
         if "::" in url:
@@ -677,36 +690,47 @@ def gofile(url):
         raise DirectDownloadLinkException(f"ERROR: {e.__class__.__name__}")
 
     def __get_token(session):
-        if 'gofile_token' in _caches:
-            __url = f"https://api.gofile.io/getAccountDetails?token={_caches['gofile_token']}"
-        else:
-            __url = 'https://api.gofile.io/createAccount'
+        headers = {
+            "User-Agent": user_agent,
+            "Accept-Encoding": "gzip, deflate, br",
+            "Accept": "*/*",
+            "Connection": "keep-alive",
+        }
+        __url = f"https://api.gofile.io/accounts"
         try:
-            __res = session.get(__url, verify=False).json()
-            if __res["status"] != 'ok':
-                if 'gofile_token' in _caches:
-                    del _caches['gofile_token']
-                return __get_token(session)
-            _caches['gofile_token'] = __res["data"]["token"]
-            return _caches['gofile_token']
+            __res = session.post(__url, headers=headers).json()
+            if __res["status"] != "ok":
+                raise DirectDownloadLinkException(f"ERROR: Failed to get token.")
+            return __res["data"]["token"]
         except Exception as e:
             raise e
 
-    def __fetch_links(session, _id, folderPath=''):
-        _url = f"https://api.gofile.io/getContent?contentId={_id}&token={token}&websiteToken=7fd94ds12fds4&cache=true"
+    def __fetch_links(session, _id, folderPath=""):
+        _url = f"https://api.gofile.io/contents/{_id}?wt=4fd6sg89d7s6&cache=true"
+        headers = {
+            "User-Agent": user_agent,
+            "Accept-Encoding": "gzip, deflate, br",
+            "Accept": "*/*",
+            "Connection": "keep-alive",
+            "Authorization": "Bearer" + " " + token,
+        }
         if _password:
             _url += f"&password={_password}"
         try:
-            _json = session.get(_url, verify=False).json()
+            _json = session.get(_url, headers=headers).json()
         except Exception as e:
             raise DirectDownloadLinkException(f"ERROR: {e.__class__.__name__}")
-        if _json['status'] in 'error-passwordRequired':
-            raise DirectDownloadLinkException(f"ERROR:\n{PASSWORD_ERROR_MESSAGE.format(url)}")
-        if _json['status'] in 'error-passwordWrong':
-            raise DirectDownloadLinkException('ERROR: This password is wrong !')
-        if _json['status'] in 'error-notFound':
-            raise DirectDownloadLinkException("ERROR: File not found on gofile's server")
-        if _json['status'] in 'error-notPublic':
+        if _json["status"] in "error-passwordRequired":
+            raise DirectDownloadLinkException(
+                f"ERROR:\n{PASSWORD_ERROR_MESSAGE.format(url)}"
+            )
+        if _json["status"] in "error-passwordWrong":
+            raise DirectDownloadLinkException("ERROR: This password is wrong !")
+        if _json["status"] in "error-notFound":
+            raise DirectDownloadLinkException(
+                "ERROR: File not found on gofile's server"
+            )
+        if _json["status"] in "error-notPublic":
             raise DirectDownloadLinkException("ERROR: This folder is not public")
 
         data = _json["data"]
@@ -714,7 +738,7 @@ def gofile(url):
         if not details['title']:
             details['title'] = data['name'] if data['type'] == "folder" else _id
 
-        contents = data["contents"]
+        contents = data["children"]
         for content in contents.values():
             if content["type"] == "folder":
                 if not content['public']:
@@ -994,23 +1018,16 @@ def doods(url):
     if "/e/" in url:
         url = url.replace("/e/", "/d/")
     parsed_url = urlparse(url)
-    with create_scraper() as session:
-        try:
-            html = HTML(session.get(url).text)
-        except Exception as e:
-            raise DirectDownloadLinkException(f'ERROR: {e.__class__.__name__} While fetching token link')
-        if not (link := html.xpath("//div[@class='download-content']//a/@href")):
-            raise DirectDownloadLinkException('ERROR: Token Link not found or maybe not allow to download! open in browser.')
-        link = f'{parsed_url.scheme}://{parsed_url.hostname}{link[0]}'
-        sleep(2)
-        try:
-            _res = session.get(link)
-        except Exception as e:
-            raise DirectDownloadLinkException(
-                f'ERROR: {e.__class__.__name__} While fetching download link')
-    if not (link := search(r"window\.open\('(\S+)'", _res.text)):
-        raise DirectDownloadLinkException("ERROR: Download link not found try again")
-    return (link.group(1), f'Referer: {parsed_url.scheme}://{parsed_url.hostname}/')
+    api_url = f"https://api.pake.tk/dood?url={url}"
+    response = requests.get(api_url)
+    if response.status_code != 200:
+        raise DirectDownloadLinkException("ERROR: Failed to fetch direct link from API")
+    json_data = response.json()
+    if direct_link := json_data.get("data", {}).get("direct_link"):
+        return f"https://dd-cdn.pakai.eu.org/download?url={direct_link}"
+    else:
+        raise DirectDownloadLinkException("ERROR: Direct link not found in API response")
+
 
 def hubdrive(url):
     try:
@@ -1080,10 +1097,10 @@ def filewish(url):
     parsed_url = urlparse(url)
     hostname = parsed_url.hostname
     scheme = parsed_url.scheme
-    if any(x in hostname for x in ['filelions.com', 'filelions.live', 'filelions.to', 'filelions.online']):
+    if any(x in hostname for x in ["filelions.co", "filelions.live", "filelions.to", "filelions.site", "cabecabean.lol", "filelions.online"]):
         apiKey = config_dict['FILELION_API']
-        apiUrl = 'https://api.filelions.com'
-    elif any(x in hostname for x in ['embedwish.com', 'streamwish.com', 'kitabmarkaz.xyz', 'wishfast.top']):
+        apiUrl = 'https://api.filelions.co'
+    elif any(x in hostname for x in ['embedwish.com', 'streamwish.com', 'kitabmarkaz.xyz', 'wishfast.top', 'streamwish.to']):
         apiKey = config_dict['STREAMWISH_API']
         apiUrl = 'https://api.streamwish.com'
     if not apiKey:
@@ -1204,3 +1221,13 @@ def jiodrive(url):
         if resp['code'] != '200':
             raise DirectDownloadLinkException("ERROR: The user's Drive storage quota has been exceeded.")
         return resp['file']
+
+def pcloud(url):
+    with create_scraper() as session:
+        try:
+            res = session.get(url)
+        except Exception as e:
+            raise DirectDownloadLinkException(f"ERROR: {e.__class__.__name__}")
+    if link := findall(r'.downloadlink.:..(https:.*)..', res.text):
+        return link[0].replace('\/', '/')
+    raise DirectDownloadLinkException("ERROR: Direct link not found")
