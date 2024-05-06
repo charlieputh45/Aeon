@@ -287,6 +287,14 @@ async def turn_page(data):
                 STATUS_START -= STATUS_LIMIT
                 PAGE_NO -= 1
 
+def text_to_bytes(size_text):
+    size_text = size_text.lower()
+    multiplier = {'k': 1024, 'm': 1048576, 'g': 1073741824, 't': 1099511627776, 'p': 1125899906842624}
+    for unit, factor in multiplier.items():
+        if unit in size_text:
+            size_value = float(size_text.split(unit)[0])
+            return size_value * factor
+    return 0
 
 def get_readable_time(seconds):
     periods = [('millennium', 31536000000), ('century', 3153600000), ('decade', 315360000), ('year', 31536000), ('month', 2592000), ('week', 604800), ('day', 86400), ('hour', 3600), ('minute', 60), ('second', 1)]
