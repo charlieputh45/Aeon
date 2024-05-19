@@ -75,6 +75,7 @@ domain_dict = {
                      'streamtape.net',
                      'streamta.pe',
                      'streamtape.xyz'],
+    'tapeadsenjoyer': ['tapeadsenjoyer.com'],
     'wetransfer':   ['wetransfer.com',
                      'we.tl'],
     'terabox':      ['terabox',
@@ -282,6 +283,19 @@ def streamtape(url):
         raise DirectDownloadLinkException("ERROR: Download link not found")
     return f"https://streamtape.com/get_video?id={_id}{link[-1]}"
 
+def tapeadsenjoyer(url):
+    splitted_url = url.split("/")
+    _id = splitted_url[4] if len(splitted_url) >= 6 else splitted_url[-1]
+    try:
+        with Session() as session:
+            html = HTML(session.get(url).text)
+    except Exception as e:
+        raise DirectDownloadLinkException(f"ERROR: {e.__class__.__name__}")
+    if not (script := html.xpath("//script[contains(text(),'ideoooolink')]/text()")):
+        raise DirectDownloadLinkException("ERROR: requeries script not found")
+    if not (link := findall(r"(&expires\S+)'", script[0])):
+        raise DirectDownloadLinkException("ERROR: Download link not found")
+    return f"https://tapeadsenjoyer.com/get_video?id={_id}{link[-1]}"
 
 def racaty(url):
     with create_scraper() as session:
