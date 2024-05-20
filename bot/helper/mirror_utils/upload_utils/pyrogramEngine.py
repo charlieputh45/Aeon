@@ -339,9 +339,27 @@ class TgUploader:
         LOGGER.info(f"Leech Completed: {self.name}")
         await self.__listener.onUploadComplete(None, size, self.__msgs_dict, self.__total_files, self.__corrupted, self.name)
 
+    async def remove_extension(caption):
+        try:
+            removed_extension = re_sub(r'\.mkv|\.mp4|\.webm', '', caption)
+            return removed_extension
+        except Exception as e:
+            LOGGER.error(e)
+            return None    
+           
     @retry(wait=wait_exponential(multiplier=2, min=4, max=8), stop=stop_after_attempt(3),
-           retry=retry_if_exception_type(Exception))
+           retry=retry_if_exception_type(Exception))  
+
+    async def remove_extension(caption):
+        try:
+            removed_extension = re_sub(r'\.mkv|\.mp4|\.webm', '', caption)
+            return removed_extension
+        except Exception as e:
+            LOGGER.error(e)
+            return None  
+                       
     async def __upload_file(self, cap_mono, file, force_document=False):
+        new_cap_mono = await remove_extension(cap_mono)
         if self.__thumb is not None and not await aiopath.exists(self.__thumb):
             self.__thumb = None
         thumb = self.__thumb
@@ -370,7 +388,7 @@ class TgUploader:
                                                                        reply_to_message_id=self.__sent_msg.id,
                                                                        document=self.__up_path,
                                                                        thumb=thumb,
-                                                                       caption= await remove_extension(cap_mono),
+                                                                       caption = new_cap_mono,
                                                                        force_document=True,
                                                                        disable_notification=True,
                                                                        progress=self.__upload_progress,
@@ -410,10 +428,11 @@ class TgUploader:
                 if self.__is_cancelled:
                     return
                 buttons = await self.__buttons(self.__up_path, is_video)
+                
                 nrml_media = await self.__client.send_video(chat_id=self.__sent_msg.chat.id,
                                                                     reply_to_message_id=self.__sent_msg.id,
                                                                     video=self.__up_path,
-                                                                    caption= await remove_extension(cap_mono),
+                                                                    caption= new_cap_mono,
                                                                     duration=duration,
                                                                     width=width,
                                                                     height=height,
@@ -486,16 +505,7 @@ class TgUploader:
                 LOGGER.error(f"Retrying As Document. Path: {self.__up_path}")
                 return await self.__upload_file(cap_mono, file, True)
             raise err
-        
-        async def remove_extension(caption):
-            try:
-                removed_extension = re_sub(r'\.mkv|\.mp4|\.webm', '', caption)
-                return removed_extension
-            except Exception as e:
-                LOGGER.error(e)
-                return None
-
-
+                     
     @property
     def speed(self):
         try:
@@ -511,6 +521,8 @@ class TgUploader:
         self.__is_cancelled = True
         LOGGER.info(f"Cancelling Upload: {self.name}")
         await self.__listener.onUploadError('Cancelled by user!')
+
+
 
 
         
