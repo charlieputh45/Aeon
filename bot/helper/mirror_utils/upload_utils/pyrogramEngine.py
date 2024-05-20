@@ -486,14 +486,15 @@ class TgUploader:
                 LOGGER.error(f"Retrying As Document. Path: {self.__up_path}")
                 return await self.__upload_file(cap_mono, file, True)
             raise err
+        
+        async def remove_extension(caption):
+            try:
+                removed_extension = re_sub(r'\.mkv|\.mp4|\.webm', '', caption)
+                return removed_extension
+            except Exception as e:
+                LOGGER.error(e)
+                return None
 
-    async def remove_extension(caption):
-        try:
-            removed_extension = re_sub(r'\.mkv|\.mp4|\.webm', '', caption)
-            return removed_extension
-        except Exception as e:
-            LOGGER.error(e)
-            return None
 
     @property
     def speed(self):
@@ -510,4 +511,6 @@ class TgUploader:
         self.__is_cancelled = True
         LOGGER.info(f"Cancelling Upload: {self.name}")
         await self.__listener.onUploadError('Cancelled by user!')
+
+
         
