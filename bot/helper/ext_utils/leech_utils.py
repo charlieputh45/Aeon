@@ -310,6 +310,13 @@ async def get_mediainfo_link(up_path):
     link_id = (await telegraph.create_page(title="MediaInfo", content=tc))["path"]
     return f"https://graph.org/{link_id}"
 
+async def remove_extension(caption):
+    try:
+        removed_extension = re_sub(r'\.mkv|\.mp4|\.webm', '', caption)
+        return removed_extension
+    except Exception as e:
+        LOGGER.error(e)
+        return None  
 
 def get_md5_hash(up_path):
     md5_hash = md5()
