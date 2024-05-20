@@ -488,12 +488,12 @@ class TgUploader:
             raise err
 
     async def remove_extension(caption):
-    try:
-        removed_extension = re_sub(r'\.mkv|\.mp4|\.webm', '', caption)
-        return removed_extension
-    except Exception as e:
-        logger.error(e)
-        return None
+        try:
+            removed_extension = re_sub(r'\.mkv|\.mp4|\.webm', '', caption)
+            return removed_extension
+        except Exception as e:
+            LOGGER.error(e)
+            return None
 
     @property
     def speed(self):
