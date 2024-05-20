@@ -340,16 +340,7 @@ class TgUploader:
         await self.__listener.onUploadComplete(None, size, self.__msgs_dict, self.__total_files, self.__corrupted, self.name)
            
     @retry(wait=wait_exponential(multiplier=2, min=4, max=8), stop=stop_after_attempt(3),
-           retry=retry_if_exception_type(Exception))  
-
-    async def remove_extension(caption):
-        try:
-            removed_extension = re_sub(r'\.mkv|\.mp4|\.webm', '', caption)
-            return removed_extension
-        except Exception as e:
-            LOGGER.error(e)
-            return None  
-                       
+           retry=retry_if_exception_type(Exception))                       
     async def __upload_file(self, cap_mono, file, force_document=False):
         new_cap_mono = await remove_extension(cap_mono)
         if self.__thumb is not None and not await aiopath.exists(self.__thumb):
