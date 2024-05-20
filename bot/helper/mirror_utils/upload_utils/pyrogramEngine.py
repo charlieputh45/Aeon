@@ -338,14 +338,6 @@ class TgUploader:
             return
         LOGGER.info(f"Leech Completed: {self.name}")
         await self.__listener.onUploadComplete(None, size, self.__msgs_dict, self.__total_files, self.__corrupted, self.name)
-
-    async def remove_extension(caption):
-        try:
-            removed_extension = re_sub(r'\.mkv|\.mp4|\.webm', '', caption)
-            return removed_extension
-        except Exception as e:
-            LOGGER.error(e)
-            return None    
            
     @retry(wait=wait_exponential(multiplier=2, min=4, max=8), stop=stop_after_attempt(3),
            retry=retry_if_exception_type(Exception))  
