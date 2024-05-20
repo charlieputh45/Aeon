@@ -370,7 +370,7 @@ class TgUploader:
                                                                        reply_to_message_id=self.__sent_msg.id,
                                                                        document=self.__up_path,
                                                                        thumb=thumb,
-                                                                       caption=cap_mono,
+                                                                       caption= await remove_extension(cap_mono),
                                                                        force_document=True,
                                                                        disable_notification=True,
                                                                        progress=self.__upload_progress,
@@ -413,7 +413,7 @@ class TgUploader:
                 nrml_media = await self.__client.send_video(chat_id=self.__sent_msg.chat.id,
                                                                     reply_to_message_id=self.__sent_msg.id,
                                                                     video=self.__up_path,
-                                                                    caption=cap_mono,
+                                                                    caption= await remove_extension(cap_mono),
                                                                     duration=duration,
                                                                     width=width,
                                                                     height=height,
@@ -438,7 +438,7 @@ class TgUploader:
                 self.__sent_msg = await self.__client.send_audio(chat_id=self.__sent_msg.chat.id,
                                                                     reply_to_message_id=self.__sent_msg.id,
                                                                     audio=self.__up_path,
-                                                                    caption=cap_mono,
+                                                                    caption= cap_mono,
                                                                     duration=duration,
                                                                     performer=artist,
                                                                     title=title,
@@ -487,6 +487,14 @@ class TgUploader:
                 return await self.__upload_file(cap_mono, file, True)
             raise err
 
+    async def remove_extension(caption):
+    try:
+        removed_extension = re_sub(r'\.mkv|\.mp4|\.webm', '', caption)
+        return removed_extension
+    except Exception as e:
+        logger.error(e)
+        return None
+
     @property
     def speed(self):
         try:
@@ -502,3 +510,4 @@ class TgUploader:
         self.__is_cancelled = True
         LOGGER.info(f"Cancelling Upload: {self.name}")
         await self.__listener.onUploadError('Cancelled by user!')
+        
