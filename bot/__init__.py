@@ -180,6 +180,10 @@ FILELION_API = environ.get('FILELION_API', '')
 if len(FILELION_API) == 0:
     FILELION_API = ''
 
+TMDB_API_KEY = environ.get('TMDB_API_KEY', '')
+if len(TMDB_API_KEY) == 0:
+    TMDB_API_KEY = ''
+
 UPTOBOX_TOKEN = environ.get('UPTOBOX_TOKEN', '')
 if len(UPTOBOX_TOKEN) == 0:
     UPTOBOX_TOKEN = ''
@@ -439,6 +443,7 @@ config_dict = {'AS_DOCUMENT': AS_DOCUMENT,
                'USER_TD_SA': USER_TD_SA,
                'USE_SERVICE_ACCOUNTS': USE_SERVICE_ACCOUNTS,
                'WEB_PINCODE': WEB_PINCODE,
+               'TMDB_API_KEY': TMDB_API_KEY,
                'YT_DLP_OPTIONS': YT_DLP_OPTIONS}
 
 if GDRIVE_ID:
