@@ -9,7 +9,6 @@ from aiofiles.os import remove as aioremove, path as aiopath, rename as aiorenam
 from os import walk, path as ospath
 from time import time
 from PIL import Image
-from pyrogram import enums
 from pyrogram.types import InputMediaVideo, InputMediaDocument, InlineKeyboardMarkup
 from pyrogram.errors import FloodWait, RPCError, PeerIdInvalid, MessageNotModified, ChannelInvalid
 from asyncio import sleep
@@ -129,18 +128,7 @@ class TgUploader:
                 for channel_id in self.__ldump.split():
                     chat = await chat_info(channel_id)
                     try:
-                        if self.__sent_msg.video:
-                            video_file_id = self.__sent_msg.video.file_id
-                            bold_caption = f"<code>{self.__sent_msg.caption}</code>" if self.__sent_msg.caption else None
-                            
-                        dump_copy = await bot.send_video(
-                            chat_id=chat.id, 
-                            video=video_file_id,
-                            caption=mono_caption,
-                            parse_mode = enums.ParseMode.HTML,
-                            has_spoiler=True,
-                            reply_markup=self.__sent_msg.reply_markup if self.__has_buttons else None  
-                        )
+                        dump_copy = await bot.copy_message(chat_id=chat.id, from_chat_id=self.__sent_msg.chat.id, message_id=self.__sent_msg.id)
                         if self.__has_buttons:
                             rply = self.__sent_msg.reply_markup
                             try:
@@ -450,7 +438,6 @@ class TgUploader:
                                                                     height=height,
                                                                     thumb=thumb,
                                                                     supports_streaming=True,
-                                                                    has_spoiler=True,
                                                                     disable_notification=True,
                                                                     progress=self.__upload_progress,
                                                                     reply_markup=buttons)
@@ -607,4 +594,5 @@ async def get_movie_poster(movie_name, release_year):
         print(f"Error fetching TMDB data: {e}")
 
     return None
+
 
