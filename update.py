@@ -56,14 +56,14 @@ if len(UPSTREAM_REPO) == 0:
 
 UPSTREAM_BRANCH = environ.get('UPSTREAM_BRANCH', '')
 if len(UPSTREAM_BRANCH) == 0:
-    UPSTREAM_BRANCH = 'main'
+    UPSTREAM_BRANCH = 'beta'
 
 if ospath.exists('.git'):
     srun(["rm", "-rf", ".git"])
 
 update = srun([f"git init -q \
-                 && git config --global user.email yesiamshojib@gmail.com \
-                 && git config --global user.name 5hojib \
+                 && git config --global user.email desmondmiles166@gmail.com \
+                 && git config --global user.name johnmclane5 \
                  && git add . \
                  && git commit -sm update -q \
                  && git remote add origin {UPSTREAM_REPO} \
